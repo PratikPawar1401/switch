@@ -35,11 +35,16 @@ function mcpServerOf(toolCall: AcpToolCall, serverNames?: ReadonlySet<string>): 
   if (typeof toolName !== 'string') return undefined;
   const alias = /^mcp_(.+?)\./.exec(toolName)?.[1];
   if (!alias || !serverNames) return alias;
-  // Vibe turns every non-alphanumeric character in an MCP server name into
-  // `_` when it builds `mcp_<server>.<tool>` names. Map that alias back to the
+  // Vibe replaces characters other than letters, digits, `_` and `$` with `_`
+  // when it builds `mcp_<server>.<tool>` names. Map the alias back to the
   // original Switch key so connector attribution and approval policy survive
-  // names such as `google-workspace`.
-  return [...serverNames].find((name) => name.replace(/[^a-zA-Z0-9]/g, '_') === alias) ?? alias;
+  // names such as `google-workspace`. If two keys collapse to the same alias,
+  // leave the call unattributed so it cannot inherit either server's policy.
+  const matches = [...serverNames].filter(
+    (name) => name.replace(/[^a-zA-Z0-9_$]/g, '_') === alias
+  );
+  if (matches.length > 1) return undefined;
+  return matches[0] ?? alias;
 }
 
 /** Mistral Vibe's native `vibe-acp` server. */
