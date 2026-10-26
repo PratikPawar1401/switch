@@ -125,6 +125,11 @@ export interface AcpProviderHooks {
    * advertises in `initialize` is always honoured as well.
    */
   promptCapabilities?: AcpPromptCapabilities;
+  /**
+   * ACP capabilities known for a provider version that may omit them from
+   * `initialize`. Advertised capabilities always take precedence.
+   */
+  mcpCapabilities?: { http?: boolean };
   /** The ACP mode to put a new session in for Switch's runtime mode. Omit to leave the agent's default. */
   sessionMode?(runtimeMode: RuntimeMode): string;
   /**
