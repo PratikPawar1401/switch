@@ -89,6 +89,12 @@ it('recognizes Vibe MCP and subagent metadata', () => {
     })
   ).toBe('switch');
   expect(
+    mistralVibeAcp.mcpServerOf?.(
+      { toolCallId: 'hyphenated-mcp-call', _meta: { tool_name: 'mcp_google_workspace.search' } },
+      new Set(['google-workspace'])
+    )
+  ).toBe('google-workspace');
+  expect(
     mistralVibeAcp.mcpServerOf?.({
       toolCallId: 'ordinary-call',
       _meta: { tool_name: 'file_system.read_file' },

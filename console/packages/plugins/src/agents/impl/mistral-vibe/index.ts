@@ -36,6 +36,7 @@ export const plugin = definePlugin(
             method: 'other',
             label: 'uv',
             command: 'uv tool install mistral-vibe',
+            updateCommand: 'uv tool install --upgrade mistral-vibe',
           },
         ],
       },

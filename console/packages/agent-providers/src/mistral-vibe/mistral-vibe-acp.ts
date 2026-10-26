@@ -30,10 +30,16 @@ async function checkMistralVibeSignIn(input: AcpSignInInput): Promise<ProviderRe
   }
 }
 
-function mcpServerOf(toolCall: AcpToolCall): string | undefined {
+function mcpServerOf(toolCall: AcpToolCall, serverNames?: ReadonlySet<string>): string | undefined {
   const toolName = toolCall._meta?.tool_name;
   if (typeof toolName !== 'string') return undefined;
-  return /^mcp_(.+?)\./.exec(toolName)?.[1];
+  const alias = /^mcp_(.+?)\./.exec(toolName)?.[1];
+  if (!alias || !serverNames) return alias;
+  // Vibe turns every non-alphanumeric character in an MCP server name into
+  // `_` when it builds `mcp_<server>.<tool>` names. Map that alias back to the
+  // original Switch key so connector attribution and approval policy survive
+  // names such as `google-workspace`.
+  return [...serverNames].find((name) => name.replace(/[^a-zA-Z0-9]/g, '_') === alias) ?? alias;
 }
 
 /** Mistral Vibe's native `vibe-acp` server. */
